@@ -6,7 +6,16 @@ import numpy as np
 import streamlit as st
 import io
 import re
+from transformers import GPT2LMHeadModel, GPT2Tokenizer
 
+
+@st.cache_resource
+def load_model():
+    tokenizer = GPT2Tokenizer.from_pretrained("CSC671/gpt1-ioc-model_meta_cve")
+    model = GPT2LMHeadModel.from_pretrained("CSC671/gpt1-ioc-model_meta_cve")
+    return tokenizer, model
+    
+login(st.secrets["huggingface"]["token"])
 # === Classification parameters ===
 HYPOTHESIS_TEMPLATE = "This example is {}."  # template for zero-shot hypothesis
 
@@ -268,12 +277,8 @@ if uploaded_file is not None:
         
     st.subheader("Predicting using Fine-Tuned GPT2")
     
-    from transformers import GPT2LMHeadModel, GPT2Tokenizer
 
-    model_dir = "gpt2-ioc-model_meta_cve"
-
-    model = GPT2LMHeadModel.from_pretrained(model_dir)
-    tokenizer = GPT2Tokenizer.from_pretrained(model_dir)
+    tokenizer, model = load_model()
     df = pd.read_csv(file_copy2)
     df['tags'] = df['tags'].apply(lambda x: eval(x) if isinstance(x, str) else x)
     df['cve'] = df['cve'].apply(lambda x: eval(x) if isinstance(x, str) else x)
