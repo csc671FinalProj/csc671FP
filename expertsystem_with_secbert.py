@@ -194,6 +194,7 @@ if uploaded_file is not None:
     st.subheader("Predicting using the SecBert Model....")
     ioc_data_list = parse_gn_csv_to_ioc_data(file_copy1)
     print(len(ioc_data_list))
+    
     for ioc_data in ioc_data_list:
         prompt = build_ttp_prompt(ioc_data)
         # Classify techniques using SecBERT
@@ -210,6 +211,7 @@ if uploaded_file is not None:
         # Map technique names to IDs and handle sub-techniques
         pred_tech_ids = []
         for t in pred_tech:
+            st.write("Loading the IoC")
             # Find the technique ID for this technique name
             tech_id_series = techniques_df.loc[techniques_df["Technique Name"] == t, "Technique ID"]
             if not tech_id_series.empty:
